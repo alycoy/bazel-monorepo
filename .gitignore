@@ -1,4 +1,2 @@
-bazel-bin/
-bazel-learning-bazel/
-bazel-out/
-bazel-testlogs/
+# Bazel build files
+bazel-*
