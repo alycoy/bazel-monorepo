@@ -1,0 +1,9 @@
+{
+  "name": "@pnpm-monorepo/tailwind-config",
+  "private": true,
+  "dependencies": {
+    "tailwindcss-animate": "^1.0.7",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}

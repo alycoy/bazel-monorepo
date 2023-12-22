@@ -1,0 +1,1 @@
+module.exports = require('@pnpm-monorepo/tailwind-config/tailwind.config.cjs')

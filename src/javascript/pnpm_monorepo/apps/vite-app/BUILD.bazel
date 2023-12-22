@@ -1,0 +1,47 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//src/javascript/pnpm_monorepo/apps/vite-app:vite/package_json.bzl", vite_bin = "bin")
+
+npm_link_all_packages(name = "node_modules")
+
+SRCS = [
+    "index.html",
+    "package.json",
+    "vite.config.ts",
+    "tsconfig.json",
+    "tsconfig.node.json",
+    "tailwind.config.js",
+    "//src/javascript/pnpm_monorepo/apps/vite-app/src",
+    ".env",
+    "//src/javascript/pnpm_monorepo/packages/tailwind-config",
+]
+
+BUILD_DEPS = [":node_modules/" + d for d in [
+    "@vitejs/plugin-react",
+    "vite",
+    "react",
+    "react-dom",
+]]
+
+SHARED_BUILD_DPS = ["//src/javascript/pnpm_monorepo:node_modules/" + d for d in [
+    "@pnpm-monorepo/tailwind-config",
+    "@pnpm-monorepo/ui",
+]]
+
+filegroup(
+    name = "prod_srcs",
+    srcs = SRCS + BUILD_DEPS,
+)
+
+vite_bin.vite(
+    name = "build",
+    srcs = [":prod_srcs"],
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = ["dist"],
+)
+
+vite_bin.vite_binary(
+    name = "vite-app",
+    chdir = package_name(),
+    data = SRCS + BUILD_DEPS,
+)

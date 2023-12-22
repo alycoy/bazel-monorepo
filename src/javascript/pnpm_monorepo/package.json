@@ -1,15 +1,29 @@
 {
-  "name": "pnpm_monorepo",
+  "name": "pnpm-monorepo",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "tailwind-config": "pnpm --filter @pnpm-monorepo/tailwind-config",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@pnpm-monorepo/tailwind-config": "workspace:*",
+    "@pnpm-monorepo/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.1",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "5.2.2",
+    "vite": "^5.0.0",
+    "tailwindcss": "^3.4.0"
   }
 }

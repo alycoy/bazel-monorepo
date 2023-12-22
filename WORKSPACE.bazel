@@ -58,11 +58,7 @@ go_register_toolchains(version = "1.20.5")
 
 gazelle_dependencies(go_repository_default_config = "//:WORKSPACE.bazel")
 
-# NODE JS
-
-# load("@rules_nodejs//nodejs:repositories.bzl", "node_repositories")
-
-# node_repositories()
+# JAVASCRIPT / TYPESCRIPT
 
 http_archive(
     name = "aspect_rules_js",
@@ -86,11 +82,28 @@ load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 
 npm_translate_lock(
     name = "npm",
+    npmrc = "//src/javascript/pnpm_monorepo:.npmrc",
     pnpm_lock = "//src/javascript/pnpm_monorepo:pnpm-lock.yaml",
     verify_node_modules_ignored = "//:.bazelignore",
-    npmrc = '//src/javascript/pnpm_monorepo:.npmrc',
 )
 
 load("@npm//:repositories.bzl", "npm_repositories")
 
 npm_repositories()
+
+http_archive(
+    name = "aspect_rules_ts",
+    sha256 = "bd3e7b17e677d2b8ba1bac3862f0f238ab16edb3e43fb0f0b9308649ea58a2ad",
+    strip_prefix = "rules_ts-2.1.0",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v2.1.0/rules_ts-v2.1.0.tar.gz",
+)
+
+load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
+
+rules_ts_dependencies(
+    ts_version = "5.2.2",
+)
+
+load("@bazel_features//:deps.bzl", "bazel_features_deps")
+
+bazel_features_deps()

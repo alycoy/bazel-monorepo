@@ -1,0 +1,89 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@npm//src/javascript/pnpm_monorepo/apps/vite-app:vite/package_json.bzl", vite_bin = "bin")
+
+npm_link_all_packages(name = "node_modules")
+
+SRCS = [
+    "src/index.ts",
+    "src/index.css",
+    "src/components/primitives/button.tsx",
+    "src/components/primitives/index.ts",
+]
+
+js_library(
+    name = "vite_config",
+    srcs = ["vite.config.ts"],
+    deps = [
+        "//src/javascript/pnpm_monorepo:node_modules/@vitejs/plugin-react",
+        "//src/javascript/pnpm_monorepo:node_modules/tailwindcss",
+        "//src/javascript/pnpm_monorepo:node_modules/vite",
+    ],
+)
+
+BUILD_DEPS = [
+    ":vite_config",
+    "//src/javascript/pnpm_monorepo:node_modules/react",
+    "//src/javascript/pnpm_monorepo:node_modules/react-dom",
+    "//src/javascript/pnpm_monorepo:node_modules/@pnpm-monorepo/tailwind-config",
+]
+
+vite_bin.vite(
+    name = "build",
+    srcs = SRCS + BUILD_DEPS,
+    outs = ["dist/index.es.js"],
+    args = [
+        "build",
+        package_name(),
+    ],
+)
+
+# tsc_bin.tsc(
+#     name = "types",
+#     srcs = _SRCS + [
+#         "tsconfig.json",
+#         # "//vue:node_modules/vite",
+#         # "//vue:node_modules/vue",
+#     ],
+#     outs = [
+#         "dist/types/InputText.vue.d.ts",
+#         "dist/types/InputTextarea.vue.d.ts",
+#         "dist/types/components.d.ts",
+#         "dist/types/index.d.ts",
+#     ],
+#     args = [
+#         "--project",
+#         package_name(),
+#     ],
+# )
+
+ts_project(
+    name = "types",
+    srcs = SRCS,
+    declaration = True,
+    emit_declaration_only = True,
+    preserve_jsx = True,
+    resolve_json_module = True,
+    source_map = True,
+    transpiler = "tsc",
+    deps = [
+        "//src/javascript/pnpm_monorepo:node_modules/@types/react",
+        "//src/javascript/pnpm_monorepo:node_modules/@types/react-dom",
+        "//src/javascript/pnpm_monorepo:node_modules/react",
+        "//src/javascript/pnpm_monorepo:node_modules/react-dom",
+    ],
+)
+
+npm_package(
+    name = "ui",
+    srcs = [
+        "package.json",
+        ":build",
+        ":types",
+    ],
+    # This is a perf improvement; the default will be flipped to False in rules_js 2.0
+    include_runfiles = False,
+    visibility = ["//visibility:public"],
+)
